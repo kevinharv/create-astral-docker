@@ -1,7 +1,7 @@
 ---
 services:
   astral:
-    image: ghcr.io/kevharv/astral-server
+    image: ghcr.io/kevinharv/create-astral-docker:master
     # build: .
     container_name: astral-server
     restart: "unless-stopped"
