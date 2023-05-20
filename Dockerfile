@@ -10,6 +10,7 @@ ENV MINECRAFT_VERSION="1.18.2"
 ENV ASTRAL_VERSION="2.0.4c"
 ENV FABRIC_VERSION="0.14.14"
 ENV FABRIC_INSTALLER_VERSION="0.11.2"
+ENV SERVER_ICON=""
 
 # Install RCON CLI client
 WORKDIR /tmp
@@ -35,8 +36,8 @@ RUN curl -fsSL -o "server.jar" "https://meta.fabricmc.net/v2/versions/loader/${M
 RUN sed -i 's/rcon.password=/rcon.password='$RCON_PASSWORD'/' server.properties
 RUN sed -i 's/enable-rcon=false/enable-rcon=true/' server.properties
 
-# Insert EULA
-RUN echo "eula=${EULA}" > eula.txt
+# Curl the server-icon.png
+RUN if [[ -n "$SERVER_ICON" ]]; then curl -o server.icon.png ${SERVER_ICON}; fi
 
 # Copy the entrypoint and make it executable
 COPY entrypoint.sh entrypoint.sh

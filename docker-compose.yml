@@ -8,6 +8,8 @@ services:
     stop_grace_period: 1m
     environment:
       - EULA=true
+    env_file:
+      - server_properties.env
     ports:
       - 25565:25565
     healthcheck:
