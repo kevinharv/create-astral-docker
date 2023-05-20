@@ -1,0 +1,23 @@
+---
+services:
+  astral:
+    image: ghcr.io/kevharv/astral-server
+    # build: .
+    container_name: astral-server
+    restart: "unless-stopped"
+    stop_grace_period: 1m
+    environment:
+      - EULA=true
+    ports:
+      - 25565:25565
+    healthcheck:
+      test: ["CMD", "rcon-cli", "-c", "/etc/rcon.yaml", "list"]
+      interval: 1m
+      timeout: 10s
+      retries: 5
+      start_period: 3m
+    volumes:
+      - worldData:/server/world
+
+volumes:
+  worldData:

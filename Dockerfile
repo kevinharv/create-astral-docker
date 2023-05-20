@@ -1,10 +1,10 @@
 FROM amazoncorretto:17-alpine
 
-RUN apk add unzip curl
+RUN apk add unzip curl bash
 
 ENV RCON_VERSION="0.10.3"
 ENV RCON_PASSWORD="MY_SECRET_KEY"
-ENV EULA=false
+ENV EULA=true
 ENV RCON_PORT=25575
 ENV MINECRAFT_VERSION="1.18.2"
 ENV ASTRAL_VERSION="2.0.4c"
@@ -32,14 +32,21 @@ RUN unzip "astral_server.zip" && rm "astral_server.zip"
 RUN curl -fsSL -o "server.jar" "https://meta.fabricmc.net/v2/versions/loader/${MINECRAFT_VERSION}/${FABRIC_VERSION}/${FABRIC_INSTALLER_VERSION}/server/jar"
 
 # Configure server.properties
-RUN sed -i 's/rcon.password=/rcon.password="'$RCON_PASSWORD'"/' server.properties
+RUN sed -i 's/rcon.password=/rcon.password='$RCON_PASSWORD'/' server.properties
 RUN sed -i 's/enable-rcon=false/enable-rcon=true/' server.properties
 
+# Insert EULA
+RUN echo "eula=${EULA}" > eula.txt
 
+# Copy the entrypoint and make it executable
+COPY entrypoint.sh entrypoint.sh
+RUN chmod +x entrypoint.sh
+
+# USER minecraft:minecraft
+# RUN chown -R minecraft:minecraft /server
 # TODO - CREATE AND SET USER (and make owner of /server and entrypoint)
-# TODO - CREATE EULA FROM ENV
 # TODO - MAKE MULTI-STAGE BUILD
 
+VOLUME ["/server/world"]
 EXPOSE 25565
-# Run entrypoint
-# ENTRYPOINT [ "/bin/sh" ]
+ENTRYPOINT ["/bin/bash", "/server/entrypoint.sh"]
